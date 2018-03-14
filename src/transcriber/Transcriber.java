@@ -1,16 +1,7 @@
-/*
- * Copyright 1999-2013 Carnegie Mellon University.
- * Portions Copyright 2004 Sun Microsystems, Inc.
- * Portions Copyright 2004 Mitsubishi Electric Research Laboratories.
- * All Rights Reserved.  Use is subject to license terms.
- *
- * See the file "license.terms" for information on usage and
- * redistribution of this file, and for a DISCLAIMER OF ALL
- * WARRANTIES.
- */
-
 package transcriber;
 
+import java.io.File;
+import java.io.FileInputStream;
 import java.io.InputStream;
 
 import edu.cmu.sphinx.api.Configuration;
@@ -20,10 +11,6 @@ import edu.cmu.sphinx.decoder.adaptation.Stats;
 import edu.cmu.sphinx.decoder.adaptation.Transform;
 import edu.cmu.sphinx.result.WordResult;
 
-/**
- * A simple example that shows how to transcribe a continuous audio file that
- * has multiple utterances in it.
- */
 public class Transcriber {
 
     public static void main(String[] args) throws Exception {
@@ -33,20 +20,20 @@ public class Transcriber {
 
         // Load model from the jar
         configuration
-                .setAcousticModelPath("CMUSphinxTest/SphinxFiles/es");
+                .setAcousticModelPath("resource:/edu/cmu/sphinx/models/en-us/en-us");
 
         // You can also load model from folder
         // configuration.setAcousticModelPath("file:en-us");
 
         configuration
-                .setDictionaryPath("CMUSphinxTest/SphinxFiles/es.dict");
+                .setDictionaryPath("resource:/edu/cmu/sphinx/models/en-us/cmudict-en-us.dict");
         configuration
-                .setLanguageModelPath("CMUSphinxTest/SphinxFiles/es_lang");
+                .setLanguageModelPath("resource:/edu/cmu/sphinx/models/en-us/en-us.lm.bin");
 
         StreamSpeechRecognizer recognizer = new StreamSpeechRecognizer(
                 configuration);
-        InputStream stream = Transcriber.class
-                .getResourceAsStream("/edu/cmu/sphinx/demo/aligner/10001-90210-01803.wav");
+        InputStream stream = new FileInputStream(new File("Media/prueba.wav"));
+
         stream.skip(44);
 
         // Simple recognition with generic model
@@ -71,7 +58,7 @@ public class Transcriber {
         // Live adaptation to speaker with speaker profiles
 
         stream = Transcriber.class
-                .getResourceAsStream("/edu/cmu/sphinx/demo/aligner/10001-90210-01803.wav");
+                .getResourceAsStream("Media/prueba.wav");
         stream.skip(44);
 
         // Stats class is used to collect speaker-specific data
@@ -88,7 +75,7 @@ public class Transcriber {
 
         // Decode again with updated transform
         stream = Transcriber.class
-                .getResourceAsStream("/edu/cmu/sphinx/demo/aligner/10001-90210-01803.wav");
+                .getResourceAsStream("Media/prueba.wav");
         stream.skip(44);
         recognizer.startRecognition(stream);
         while ((result = recognizer.getResult()) != null) {
