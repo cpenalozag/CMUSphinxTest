@@ -13,77 +13,78 @@ import edu.cmu.sphinx.result.WordResult;
 
 public class TranscriberSpanish {
 
-    public static void main(String[] args) throws Exception {
-        try {
-        	final String filePath = "Media/diseno_20171002_5950-010110.wav";
-        	StringBuilder sb = new StringBuilder();
-        	
-        	System.out.println("Loading models...");
+	public static void main(String[] args) throws Exception {
+		try {
+			final String filePath = "Media/diseno_20171002_5950-010110.wav";
+			StringBuilder sb = new StringBuilder();
 
-            Configuration configuration = new Configuration();
+			System.out.println("Loading models...");
 
-            // Load model from path
-            configuration.setAcousticModelPath("ES/acoustic");
-            configuration.setDictionaryPath("ES/es.dict");
-            configuration.setLanguageModelPath("ES/es-20k.lm");
+			Configuration configuration = new Configuration();
 
-            StreamSpeechRecognizer recognizer = new StreamSpeechRecognizer(configuration);
-            //Audio needs to be .wav, mono channel, 16KHz sample rate, normalized
-            //https://audio.online-convert.com/convert-to-wav
-            InputStream stream = new FileInputStream(new File(filePath));
+			// Load model from path
+			configuration.setAcousticModelPath("ES/acoustic");
+			configuration.setDictionaryPath("ES/es.dict");
+			configuration.setLanguageModelPath("ES/es-20k.lm");
 
-            stream.skip(44);
+			StreamSpeechRecognizer recognizer = new StreamSpeechRecognizer(configuration);
+			//Audio needs to be .wav, mono channel, 16KHz sample rate, normalized
+			//https://audio.online-convert.com/convert-to-wav
+			InputStream stream = new FileInputStream(new File(filePath));
 
-            // Simple recognition with generic model
-            recognizer.startRecognition(stream);
-            SpeechResult result;
-            while ((result = recognizer.getResult()) != null) {
+			stream.skip(44);
 
-                System.out.format("Hypothesis: %s\n", result.getHypothesis());
-                sb.append(result.getHypothesis()).append(" ");
-                System.out.println("List of recognized words and their times:");
-                for (WordResult r : result.getWords()) {
-                    System.out.println(r);
-                }
+			// Simple recognition with generic model
+			recognizer.startRecognition(stream);
+			SpeechResult result;
+			while ((result = recognizer.getResult()) != null) {
 
-                System.out.println("Best 3 hypothesis:");
-                for (String s : result.getNbest(3))
-                    System.out.println(s);
-            }
-            recognizer.stopRecognition();
-            
-            System.out.println(sb.toString());
+				System.out.format("Hypothesis: %s\n", result.getHypothesis());
+				sb.append(result.getHypothesis()).append(" ");
 
-            // Live adaptation to speaker with speaker profiles
+				System.out.println("List of recognized words and their times:");
+				for (WordResult r : result.getWords()) {
+					System.out.println(r);
+				}
 
-            stream = TranscriberSpanish.class.getResourceAsStream(filePath);
-            stream.skip(44);
+				System.out.println("Best 3 hypothesis:");
+				for (String s : result.getNbest(3))
+					System.out.println(s);
+			}
+			recognizer.stopRecognition();
 
-            // Stats class is used to collect speaker-specific data
-            Stats stats = recognizer.createStats(1);
-            recognizer.startRecognition(stream);
-            while ((result = recognizer.getResult()) != null) {
-                stats.collect(result);
-            }
-            recognizer.stopRecognition();
+			System.out.println(sb.toString());
 
-            // Transform represents the speech profile
-            Transform transform = stats.createTransform();
-            recognizer.setTransform(transform);
 
-            // Decode again with updated transform
-            stream = TranscriberSpanish.class.getResourceAsStream(filePath);
-            stream.skip(44);
-            recognizer.startRecognition(stream);
-            while ((result = recognizer.getResult()) != null) {
-                System.out.format("Hypothesis: %s\n", result.getHypothesis());
-            }
-            
-            recognizer.stopRecognition();
-            
+			// Live adaptation to speaker with speaker profiles
+
+			stream = TranscriberSpanish.class.getResourceAsStream("Media/prueba.wav");
+			stream.skip(44);
+
+			// Stats class is used to collect speaker-specific data
+			Stats stats = recognizer.createStats(1);
+			recognizer.startRecognition(stream);
+			while ((result = recognizer.getResult()) != null) {
+				stats.collect(result);
+			}
+			recognizer.stopRecognition();
+
+			// Transform represents the speech profile
+			Transform transform = stats.createTransform();
+			recognizer.setTransform(transform);
+
+			// Decode again with updated transform
+			stream = TranscriberSpanish.class.getResourceAsStream(filePath);
+			stream.skip(44);
+			recognizer.startRecognition(stream);
+			while ((result = recognizer.getResult()) != null) {
+				System.out.format("Hypothesis: %s\n", result.getHypothesis());
+			}
+			recognizer.stopRecognition();
+
 		} catch (Exception e) {
 			System.exit(0);
 		}
 
-    }
+	}
 }

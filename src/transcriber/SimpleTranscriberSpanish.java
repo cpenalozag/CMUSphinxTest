@@ -12,9 +12,9 @@ import edu.cmu.sphinx.result.WordResult;
 public class SimpleTranscriberSpanish {       
 
 	public static void main(String[] args) throws Exception {
-		
+
 		final String filePath = "Media/diseno_20171002_5950-010110.wav";
-    	StringBuilder sb = new StringBuilder();
+		StringBuilder sb = new StringBuilder();
 
 		Configuration configuration = new Configuration();
 
@@ -34,6 +34,7 @@ public class SimpleTranscriberSpanish {
 			sb.append(result.getHypothesis()).append(" ");
 		}
 		System.out.println(sb.toString());
+
 		recognizer.stopRecognition();
 	}
 }
